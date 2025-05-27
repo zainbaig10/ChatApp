@@ -1,0 +1,4 @@
+node_modules/
+.env
+config/chatAppFirebaseConf.json
+config/chatAppFirebaseConf.json
