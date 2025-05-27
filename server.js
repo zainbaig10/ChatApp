@@ -16,9 +16,15 @@ import Chats from "./schema/chatsSchema.js";
 import { initializeApp, applicationDefault } from "firebase-admin/app";
 import admin from "firebase-admin";
 
-const serviceAccount = JSON.parse(
+let serviceAccount;
+
+if (process.env.FIREBASE_CONFIG) {
+  serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+} else {
+  serviceAccount = JSON.parse(
     fs.readFileSync("./config/chatAppFirebaseConf.json", "utf-8")
   );
+}
 
 dotenv.config();
 const port = process.env.PORT || 4000;
