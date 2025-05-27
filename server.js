@@ -6,6 +6,7 @@ import appRoutes from "./routes/index.js";
 import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
+console.log("Loaded MONGO_URI:", process.env.MONGO_URI); 
 import https from "https";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
