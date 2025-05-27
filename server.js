@@ -5,6 +5,7 @@ import mongooseConnection from "./mongo.js";
 import appRoutes from "./routes/index.js";
 import fs from "fs";
 import dotenv from "dotenv";
+dotenv.config();
 import https from "https";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
@@ -26,7 +27,6 @@ if (process.env.FIREBASE_CONFIG) {
   );
 }
 
-dotenv.config();
 const port = process.env.PORT || 4000;
 
 const app = express();
@@ -52,7 +52,6 @@ initializeApp({
   projectId: "chatapp-f0e1f",
 });
 
-
 // Health check
 app.get("/health", (req, res) => {
   console.log("Received request at " + Date.now());
@@ -77,33 +76,35 @@ if (process.env.DEPLOY_ENV === "local") {
   io.on("connection", (socket) => {
     console.log("User connected to Socket:", socket.id);
     socket.on("join-chat", (chatId) => {
-      console.log("Socket joined chat",chatId);
+      console.log("Socket joined chat", chatId);
       socket.join(chatId);
     });
 
-    socket.on("send-message", async ({ chatId, senderId,receiverId, text }) => {
-      try {
-        const newMessage = await Messages.create({
-          chatId,
-          sender: senderId,
-          text,
-          receiver:receiverId
-        });
+    socket.on(
+      "send-message",
+      async ({ chatId, senderId, receiverId, text }) => {
+        try {
+          const newMessage = await Messages.create({
+            chatId,
+            sender: senderId,
+            text,
+            receiver: receiverId,
+          });
 
-        console.log("Created new message",newMessage);
-  
-        await Chats.findByIdAndUpdate(chatId, {
-          lastMessage: text,
-          lastMessageTime: new Date(),
-        });
-  
-        io.to(chatId).emit("receive-message", newMessage);
-        console.log(`Emitted message to room ${chatId}`);
-      } catch (error) {
-        console.log(error,"Error while sending Message on socket")
+          console.log("Created new message", newMessage);
+
+          await Chats.findByIdAndUpdate(chatId, {
+            lastMessage: text,
+            lastMessageTime: new Date(),
+          });
+
+          io.to(chatId).emit("receive-message", newMessage);
+          console.log(`Emitted message to room ${chatId}`);
+        } catch (error) {
+          console.log(error, "Error while sending Message on socket");
+        }
       }
-
-    });
+    );
 
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);
@@ -132,34 +133,42 @@ if (process.env.DEPLOY_ENV === "local") {
   io.on("connection", (socket) => {
     console.log("User connected to Socket:", socket.id);
     socket.on("join-chat", (chatId) => {
-      console.log("Socket joined chat",chatId);
+      console.log("Socket joined chat", chatId);
       socket.join(chatId);
     });
 
-    socket.on("send-message", async ({ chatId, senderId,receiverId, text }) => {
-      console.log(chatId,senderId,receiverId,text,"Recieved this message");
-      try {
-        const newMessage = await Messages.create({
+    socket.on(
+      "send-message",
+      async ({ chatId, senderId, receiverId, text }) => {
+        console.log(
           chatId,
-          sender: senderId,
+          senderId,
+          receiverId,
           text,
-          receiver:receiverId
-        });
+          "Recieved this message"
+        );
+        try {
+          const newMessage = await Messages.create({
+            chatId,
+            sender: senderId,
+            text,
+            receiver: receiverId,
+          });
 
-        console.log("Created new message",newMessage);
-  
-        await Chats.findByIdAndUpdate(chatId, {
-          lastMessage: text,
-          lastMessageTime: new Date(),
-        });
-  
-        io.to(chatId).emit("receive-message", newMessage);
-        console.log(`Emitted message to room ${chatId}`);
-      } catch (error) {
-        console.log(error,"Error while sending Message on socket")
+          console.log("Created new message", newMessage);
+
+          await Chats.findByIdAndUpdate(chatId, {
+            lastMessage: text,
+            lastMessageTime: new Date(),
+          });
+
+          io.to(chatId).emit("receive-message", newMessage);
+          console.log(`Emitted message to room ${chatId}`);
+        } catch (error) {
+          console.log(error, "Error while sending Message on socket");
+        }
       }
-
-    });
+    );
 
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);
