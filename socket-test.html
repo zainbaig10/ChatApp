@@ -7,10 +7,10 @@
     <input type="text" id="msg" placeholder="Type message..." />
     <button onclick="sendMessage()">Send</button>
     <ul id="messages"></ul>
-
+ 
     <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
     <script>
-      const socket = io("http://localhost:4001");  
+      const socket = io("https://chatapp-mssq.onrender.com");  
 
       const chatId = "681b8814c00d02f6e679f0f9"; 
       const senderId = "681b34550111ecb1fa43f45d"; 
